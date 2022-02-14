@@ -57,6 +57,7 @@ typedef enum {
     FORMAT_AVC,
     FORMAT_HEVC,
     FORMAT_RGB_BAYER_12BPP,
+    FORMAT_PRIVATE,
     FORMAT_IMAGE_BUTT
 } ImageFormat;
 
