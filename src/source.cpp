@@ -92,7 +92,7 @@ Surface* StreamSource::GetSurface(void)
 uint8_t* StreamSource::GetSharedBuffer(size_t& size)
 {
 #ifndef SURFACE_DISABLED
-    if ((surface_ == nullptr) || (curBuffer_ != nullptr)){
+    if ((surface_ == nullptr) || (curBuffer_ != nullptr)) {
         return nullptr;
     }
     SurfaceBuffer* surfaceBuffer = surface_->RequestBuffer();
@@ -111,7 +111,7 @@ uint8_t* StreamSource::GetSharedBuffer(size_t& size)
 int StreamSource::QueueSharedBuffer(void* buffer, size_t size)
 {
 #ifndef SURFACE_DISABLED
-    if ((surface_ == nullptr) || (buffer == nullptr) || (curBuffer_ == nullptr)){
+    if ((surface_ == nullptr) || (buffer == nullptr) || (curBuffer_ == nullptr)) {
         return -1;
     }
 
@@ -128,6 +128,5 @@ int StreamSource::QueueSharedBuffer(void* buffer, size_t size)
 #endif
     return 0;
 }
-
 }  // namespace Media
 }  // namespace OHOS
