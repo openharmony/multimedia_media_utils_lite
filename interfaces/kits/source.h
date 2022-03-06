@@ -235,7 +235,7 @@ public:
      * @since 1.0
      * @version 1.0
      */
-    explicit Source(std::shared_ptr<DataConsumer> dataConsumer);
+    explicit Source(const std::shared_ptr<DataConsumer> &dataConsumer);
 
     ~Source() = default;
 
@@ -299,7 +299,7 @@ public:
      * @since 1.0
      * @version 1.0
      */
-    std::shared_ptr<DataConsumer> GetDataConsumer() const;
+    const std::shared_ptr<DataConsumer> &GetDataConsumer() const;
 
 private:
     std::string uri_;
