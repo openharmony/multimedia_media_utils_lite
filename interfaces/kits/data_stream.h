@@ -16,12 +16,10 @@
 #ifndef MEDIA_DATA_STREAM
 #define MEDIA_DATA_STREAM
 
-#include <cstdint>
 #include <memory>
 
 namespace OHOS {
 namespace Media {
-
 /**
  * @enum MemoryType
  *
@@ -170,7 +168,7 @@ public:
  * @since 1.0
  * @version 1.0
  */
-class DataStream : public DataConsumer, public DataProducer{
+class DataStream : public DataConsumer, public DataProducer {
 };
 
 /**
@@ -183,7 +181,6 @@ class DataStream : public DataConsumer, public DataProducer{
  * @version 1.0
  */
 std::shared_ptr<DataStream> CreateDataStream(size_t size, size_t count, MemoryType type = MemoryType::VIRTUAL_ADDR);
-
 } // Media
 } // OHOS
 #endif // MEDIA_DATA_STREAM
