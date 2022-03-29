@@ -157,5 +157,5 @@ C++ 11 or later
 
 [media\_lite](https://gitee.com/openharmony/multimedia_media_lite/blob/master/README.md)
 
-[media\_utils\_lite](https://gitee.com/openharmony/multimedia_utils_lite/blob/master/README_zh.md)
+[media\_utils\_lite](https://gitee.com/openharmony/multimedia_utils_lite)
 
