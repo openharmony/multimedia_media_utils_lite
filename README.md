@@ -1,10 +1,11 @@
 # MEDIA\_UTILS\_LITE<a name="EN-US_TOPIC_0000001127127417"></a>
 
--   [Introduction](#section11660541593)
--   [Directory Structure](#section8685144625320)
--   [Usage](#section1648194512427)
--   [Constraints](#section161941989596)
--   [Repositories Involved](#section105062051111614)
+- [MEDIA\_UTILS\_LITE<a name="EN-US_TOPIC_0000001127127417"></a>](#media_utils_lite)
+  - [Introduction<a name="section11660541593"></a>](#introduction)
+  - [Directory Structure<a name="section8685144625320"></a>](#directory-structure)
+  - [Usage<a name="section1648194512427"></a>](#usage)
+  - [Constraints<a name="section161941989596"></a>](#constraints)
+  - [Repositories Involved<a name="section105062051111614"></a>](#repositories-involved)
 
 ## Introduction<a name="section11660541593"></a>
 
@@ -156,5 +157,5 @@ C++ 11 or later
 
 [media\_lite](https://gitee.com/openharmony/multimedia_media_lite/blob/master/README.md)
 
-**media\_utils\_lite**
+[media\_utils\_lite](https://gitee.com/openharmony/multimedia_utils_lite/blob/master/README_zh.md)
 
