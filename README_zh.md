@@ -1,10 +1,11 @@
 # 媒体子系统MEDIA\_UTILS\_LITE组件<a name="ZH-CN_TOPIC_0000001127127417"></a>
 
--   [简介](#section11660541593)
--   [目录](#section8685144625320)
--   [使用说明](#section1648194512427)
--   [约束](#section161941989596)
--   [相关仓](#section105062051111614)
+- [媒体子系统MEDIA\_UTILS\_LITE组件<a name="ZH-CN_TOPIC_0000001127127417"></a>](#媒体子系统media_utils_lite组件)
+  - [简介<a name="section11660541593"></a>](#简介)
+  - [目录<a name="section8685144625320"></a>](#目录)
+  - [使用说明<a name="section1648194512427"></a>](#使用说明)
+  - [约束<a name="section161941989596"></a>](#约束)
+  - [相关仓<a name="section105062051111614"></a>](#相关仓)
 
 ## 简介<a name="section11660541593"></a>
 
@@ -156,4 +157,5 @@ C++11版本或以上
 
 [media\_lite](https://gitee.com/openharmony/multimedia_media_lite/blob/master/README_zh.md)
 
-**media\_utils\_lite**
+[media\_utils\_lite](https://gitee.com/openharmony/multimedia_utils_lite)
+
