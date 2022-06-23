@@ -72,11 +72,10 @@ enum class SourceType : int32_t {
  * @version 1.0
  */
 struct StreamCallback {
-
     StreamCallback();
 
     virtual ~StreamCallback();
-    
+
     /**
      * @brief Enumerates buffer types of stream sources.
      *
