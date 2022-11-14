@@ -124,7 +124,7 @@
 ## 目录<a name="section8685144625320"></a>
 
 ```
-foundation/multimedia/utils/lite
+foundation/multimedia/media_utils_lite
 ├── interfaces    # 数据类型和媒体格式头文件
 └── hals       # HAL层适配接口
 └── src        # 数据类型和媒体格式实现

@@ -124,7 +124,7 @@ The following table lists the error codes.
 ## Directory Structure<a name="section8685144625320"></a>
 
 ```
-foundation/multimedia/utils/lite
+foundation/multimedia/media_utils_lite
 ├── interfaces    # Header file of the data types and media formats
 └── hals       # HAL adaptation APIs
 └── src        # Implementation of the data types and media formats
