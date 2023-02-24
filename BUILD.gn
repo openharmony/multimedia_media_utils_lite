@@ -38,7 +38,7 @@ lite_library("media_common") {
         [ "//base/hiviewdfx/hilog_lite/frameworks/featured:hilog_static" ]
     public_configs = [ ":media_common_public_config" ]
   } else {
-    public_deps += [ "//foundation/graphic/surface:lite_surface" ]
+    public_deps += [ "//foundation/graphic/surface:surface_lite" ]
     if (board_name == "hispark_taurus" || board_name == "hispark_aries") {
       public_deps += [
         "$ohos_board_adapter_dir/media:hardware_media_sdk",
