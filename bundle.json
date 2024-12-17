@@ -15,6 +15,7 @@
         "syscap": [],
         "features": [],
         "adapted_system_type": [
+            "mini",
             "small"
         ],
         "rom": "1024kB",
