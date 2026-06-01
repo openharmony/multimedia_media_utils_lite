@@ -15,4 +15,7 @@
 
 declare_args() {
   enable_media_passthrough_mode = false
+  enable_distributed_hardware = false
+  enable_distributed_dfx = false
+  drivers_peripheral_display_4K_support = false
 }

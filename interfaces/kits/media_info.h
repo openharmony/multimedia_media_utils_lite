@@ -216,4 +216,24 @@ typedef enum {
     /** Invalid value */
     BIT_WIDTH_BUTT,
 } AudioBitWidth;
+
+typedef enum {
+    AUDIO_DEVICE_MIC_LOCAL,
+    AUDIO_DEVICE_MIC_VIRTUAL,
+    AUDIO_DEVICE_SPEAKER_LOCAL,
+    AUDIO_DEVICE_SPEAKER_VIRTUAL,
+} AudioSystemDeviceType;
+
+typedef enum {
+    CONNECT = 0,
+    DISCONNECT = 1,
+} DeviceConnectStatus;
+
+typedef struct {
+    uint32_t dhId;
+    std::string deviceName;
+    AudioSystemDeviceType deviceType;
+    DeviceConnectStatus connectStatus;
+} AudioDeviceInfo;
+
 #endif  // MEDIA_INFO_H

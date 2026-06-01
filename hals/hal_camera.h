@@ -30,6 +30,7 @@ extern "C" {
 #define DESC_MAX_LEN 64
 #define AUTO_MODE_MAX_NUM 16
 #define PRIVATE_META_MAX_LEN 32
+#define CAMERA_NAME_MAX_LEN 1024
 
 typedef struct {
     int32_t x;
@@ -74,6 +75,8 @@ typedef struct {
     ImageFormat format;
     int32_t width;
     int32_t height;
+    int32_t displayWidth;
+    int32_t displayHeight;
     uint16_t fps;
     RectInfo crop;
     uint8_t invertMode;
@@ -134,7 +137,7 @@ typedef enum status {
 } CameraStatus;
 
 typedef void (*BufferAvailable)(uint32_t streamId, HalBuffer *halBuffer, uint32_t bufferNum);
-typedef void (*CameraDetectCb)(uint32_t cameraId, CameraStatus status);
+typedef void (*CameraDetectCb)(const char *cameraId, CameraStatus status);
 
 typedef struct {
     DeviceType type;
@@ -146,6 +149,8 @@ typedef struct {
 typedef struct {
     int32_t x;
     int32_t y;
+    int32_t w;
+    int32_t h;
 } PosInfo;
 
 typedef struct {
@@ -208,33 +213,50 @@ typedef struct {
     uint32_t privateData[PRIVATE_META_MAX_LEN];
 } CameraMetaResult;
 
-typedef void (*CameraResultCb)(uint32_t cameraId, CameraMetaResult result);
+typedef void (*CameraResultCb)(const char *camera, CameraMetaResult result);
 
-int32_t HalCameraInit(void);
-int32_t HalCameraDeinit(void);
-int32_t HalCameraGetModeNum(uint8_t *num);
-int32_t HalCameraSetMode(uint8_t index);
-int32_t HalCameraSetDeviceDetectCb(const CameraDetectCb cb);
-int32_t HalCameraGetDeviceNum(uint8_t *num);
-int32_t HalCameraGetDeviceList(uint32_t *cameraList, uint8_t listNum);
-int32_t HalCameraGetStreamCapNum(uint32_t cameraId, uint32_t *num);
-int32_t HalCameraGetStreamCap(uint32_t cameraId, StreamCap *streamCap, uint32_t streamNum);
-int32_t HalCameraDeviceOpen(uint32_t cameraId);
-int32_t HalCameraDeviceClose(uint32_t cameraId);
-int32_t HalCameraStreamCreate(uint32_t cameraId, const StreamAttr *stream, uint32_t *streamId);
-int32_t HalCameraStreamDestroy(uint32_t cameraId, uint32_t streamId);
-int32_t HalCameraGetDeviceId(uint32_t cameraId, uint32_t streamId, uint32_t *deviceId);
-int32_t HalCameraStreamOn(uint32_t cameraId, uint32_t streamId);
-int32_t HalCameraStreamOff(uint32_t cameraId, uint32_t streamId);
-int32_t HalCameraDequeueBuf(uint32_t cameraId, uint32_t streamId, HalBuffer *buffer);
-int32_t HalCameraQueueBuf(uint32_t cameraId, uint32_t streamId, const HalBuffer *buffer);
-int32_t HalCameraSetBufferCallback(uint32_t cameraId, const BufferAvailable callback);
-int32_t HalCameraStreamSetInfo(uint32_t cameraId, uint32_t streamId, const StreamInfo *info);
-int32_t HalCameraStreamGetInfo(uint32_t cameraId, uint32_t streamId, StreamInfo *info);
-int32_t HalCameraDeviceSetInfo(uint32_t cameraId, const DeviceInfo *info);
-int32_t HalCameraDeviceGetInfo(uint32_t cameraId, DeviceInfo *info);
-int32_t HalCameraGetAbility(uint32_t cameraId, AbilityInfo *ability);
-int32_t HalCameraSetResultCb(uint32_t cameraId, CameraResultCb cb);
+typedef struct HalCameraManager {
+    int32_t (*HalCameraInit)(void);
+    int32_t (*HalCameraDeinit)(void);
+    int32_t (*HalCameraGetModeNum)(uint8_t *num);
+    int32_t (*HalCameraSetMode)(uint8_t index);
+    int32_t (*HalCameraSetDeviceDetectCb)(const CameraDetectCb cb);
+    int32_t (*HalCameraGetDeviceNum)(uint8_t *num);
+    int32_t (*HalCameraGetDeviceList)(char cameraList[][CAMERA_NAME_MAX_LEN], uint8_t listNum);
+    int32_t (*HalCameraGetStreamCapNum)(const char *camera, uint32_t *num);
+    int32_t (*HalCameraGetStreamCap)(const char *camera, StreamCap *streamCap, uint32_t streamNum);
+    int32_t (*HalCameraDeviceOpen)(const char *camera);
+    int32_t (*HalCameraDeviceClose)(const char *camera);
+    int32_t (*HalCameraStreamCreate)(const char *camera, const StreamAttr *stream, uint32_t *streamId);
+    int32_t (*HalCameraStreamDestroy)(const char *camera, uint32_t streamId);
+    int32_t (*HalCameraGetDeviceId)(const char *camera, uint32_t streamId, uint32_t *deviceId);
+    int32_t (*HalCameraStreamOn)(const char *camera, uint32_t streamId);
+    int32_t (*HalCameraStreamOff)(const char *camera, uint32_t streamId);
+    int32_t (*HalCameraDequeueBuf)(const char *camera, uint32_t streamId, HalBuffer *buffer);
+    int32_t (*HalCameraQueueBuf)(const char *camera, uint32_t streamId, const HalBuffer *buffer);
+    int32_t (*HalCameraSetBufferCallback)(const char *camera, const BufferAvailable callback);
+    int32_t (*HalCameraStreamSetInfo)(const char *camera, uint32_t streamId, const StreamInfo *info);
+    int32_t (*HalCameraStreamGetInfo)(const char *camera, uint32_t streamId, StreamInfo *info);
+    int32_t (*HalCameraDeviceSetInfo)(const char *camera, const DeviceInfo *info);
+    int32_t (*HalCameraDeviceGetInfo)(const char *camera, DeviceInfo *info);
+    int32_t (*HalCameraGetAbility)(const char *camera, AbilityInfo *ability);
+    int32_t (*HalCameraSetResultCb)(const char *camera, CameraResultCb cb);
+    int32_t (*HalCameraUpdateSettings)(const char *camera, const char *value, uint32_t len);
+
+    int32_t (*HalCameraAddCameraDevice)(const char *deviceId, const char *dhId, const char *abilityInfo,
+                                        void *callbackObj);
+    int32_t (*HalCameraRemoveCameraDevice)(const char *deviceId, const char *dhId);
+    int32_t (*HalCameraAcquireBuffer)(const char *deviceId, const char *dhId, int32_t streamId, HalBuffer *buffer);
+    int32_t (*HalCameraShutterBuffer)(const char *deviceId, const char *dhId, int32_t streamId,
+        const HalBuffer *buffer);
+    int32_t (*HalCameraOnSettingsResult)(const char *deviceId, const char *dhId, const void *result);
+    int32_t (*HalCameraNotify)(const char *deviceId, const char *dhId, const void *event);
+
+    void *(*HalCameraGetProviderCallback)(const char *deviceId, const char *dhId);
+} HalCameraManager;
+
+HalCameraManager *GetHalCameraFuncs(void);
+HalCameraManager *GetHalDistributedCameraFuncs(void);
 
 #ifdef __cplusplus
 #if __cplusplus

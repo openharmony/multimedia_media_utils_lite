@@ -12,6 +12,7 @@
 # limitations under the License.
 
 import("//build/lite/config/component/lite_component.gni")
+import("//foundation/multimedia/media_utils_lite/config.gni")
 
 lite_library("media_common") {
   if (ohos_kernel_type == "liteos_m") {
@@ -22,6 +23,8 @@ lite_library("media_common") {
   sources = [
     "src/format.cpp",
     "src/source.cpp",
+    "src/media_log.cpp",
+    "src/media_utils.cpp",
   ]
   include_dirs = [
     "interfaces/kits",
@@ -45,6 +48,9 @@ lite_library("media_common") {
         "$ohos_board_adapter_dir/middleware:middleware_source_sdk",
       ]
     }
+  }
+  if (enable_distributed_dfx == true) {
+     defines = ["ENABLE_DFX", "HI_LOG_ENABLE"]
   }
 }
 
