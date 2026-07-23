@@ -15,6 +15,8 @@
 
 #include "media_utils.h"
 #ifdef ENABLE_DFX
+#include <cinttypes>
+
 #include "media_log.h"
 
 static std::atomic<uint64_t> g_receiveAudiotime = 0;
@@ -53,10 +55,15 @@ void MediaRecordAudioRecvTime()
 
 void MediaPrintSyncTimeDiffUs()
 {
-    if (g_receiveAudiotimeLast == g_receiveAudiotime) {
+    uint64_t current = g_receiveAudiotime.load();
+    uint64_t expected = g_receiveAudiotimeLast.load();
+    if (expected == current) {
         return;
     }
-    g_receiveAudiotimeLast.store(g_receiveAudiotime.load());
+    /* Atomically claim this timestamp; fail if another thread already updated last. */
+    if (!g_receiveAudiotimeLast.compare_exchange_strong(expected, current)) {
+        return;
+    }
     struct timeval timeEnd;
     gettimeofday(&timeEnd, nullptr);
     const uint64_t timeUs = 1000000;
@@ -68,7 +75,7 @@ void MediaPrintSyncTimeDiffUs()
         return;
     }
     uint64_t endUsec = static_cast<uint64_t>(timeEnd.tv_usec + secToUs);
-    MEDIA_DFX_LOG("audio and video sync elapsed time: %lld us", endUsec - g_receiveAudiotime);
+    MEDIA_DFX_LOG("audio and video sync elapsed time: %" PRIu64 " us", endUsec - current);
 }
 #endif
 

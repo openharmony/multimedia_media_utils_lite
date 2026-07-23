@@ -14,9 +14,6 @@
  */
 
 #include "media_log.h"
-#include <string>
-#include <ctime>
-#include <sys/time.h>
 #include "securec.h"
 #ifdef HI_LOG_ENABLE
 #include "hilog/log.h"
@@ -28,16 +25,7 @@ static const char* MEDIA_LOG_TITLE_TAG = "MEDIA_COMMON";
 constexpr int32_t LOG_MAX_LEN = 4096;
 static MEDIA_LOG_LEVEL g_enabledLevel = MEDIA_LOG_ERR;
 
-static void LogTime()
-{
-    struct timeval tv;
-    gettimeofday(&tv, nullptr);
-    struct tm tm;
-    localtime_r(&tv.tv_sec, &tm);
-    const int64_t usecToMsec = 1000;
-    printf("[%02d:%02d:%02d:%03ld]", tm.tm_hour, tm.tm_min, tm.tm_sec, tv.tv_usec / usecToMsec);
-}
-
+#ifdef HI_LOG_ENABLE
 static LogLevel MapLogLevel(MEDIA_LOG_LEVEL level)
 {
     switch (level) {
@@ -53,6 +41,7 @@ static LogLevel MapLogLevel(MEDIA_LOG_LEVEL level)
             return LOG_INFO;
     }
 }
+#endif
 
 static int32_t MediaLogPrintfOut(MEDIA_LOG_LEVEL level, const char *fmt)
 {
@@ -62,38 +51,39 @@ static int32_t MediaLogPrintfOut(MEDIA_LOG_LEVEL level, const char *fmt)
     if (fmt == nullptr) {
         return MEDIA_ERR;
     }
-#if defined(HI_LOG_ENABLE) && !defined(ENABLE_DFX)
+#ifdef HI_LOG_ENABLE
     LogLevel hiLogLevel = MapLogLevel(level);
     (void)HiLogPrint(LOG_CORE, hiLogLevel, LOG_DOMAIN, MEDIA_LOG_TITLE_TAG, "%{public}s", fmt);
 #else
-    LogTime();
+    const char *levelTag = "E";
     switch (level) {
         case MEDIA_LOG_DEBUG:
-            printf("[D]%s\n", fmt);
+            levelTag = "D";
             break;
         case MEDIA_LOG_INFO:
-            printf("[I]%s\n", fmt);
+            levelTag = "I";
             break;
         case MEDIA_LOG_WARN:
-            printf("[W]%s\n", fmt);
+            levelTag = "W";
             break;
         case MEDIA_LOG_ERR:
-            printf("[E]%s\n", fmt);
+            levelTag = "E";
             break;
         case MEDIA_LOG_FATAL:
-            printf("[F]%s\n", fmt);
+            levelTag = "F";
             break;
         default:
-            printf("[E]%s\n", fmt);
             break;
     }
+    (void)fprintf(stderr, "[%s]%s\n", levelTag, fmt);
 #endif
     return MEDIA_OK;
 }
 
 int32_t MediaLogPrintf(MEDIA_LOG_LEVEL level, const char *fmt, ...)
 {
-    char logBuf[LOG_MAX_LEN] = { 0 };
+    /* Per-thread buffer avoids 4KB stack use and needs no lock. */
+    thread_local char logBuf[LOG_MAX_LEN];
     va_list arg;
     (void)memset_s(&arg, sizeof(va_list), 0, sizeof(va_list));
     va_start(arg, fmt);
@@ -110,7 +100,7 @@ int32_t MediaLogPrintf(MEDIA_LOG_LEVEL level, const char *fmt, ...)
 
 int32_t MediaDfxLogPrintf(const char *fmt, ...)
 {
-    char logBuf[LOG_MAX_LEN] = { 0 };
+    thread_local char logBuf[LOG_MAX_LEN];
     va_list arg;
     (void)memset_s(&arg, sizeof(va_list), 0, sizeof(va_list));
     va_start(arg, fmt);
@@ -118,10 +108,18 @@ int32_t MediaDfxLogPrintf(const char *fmt, ...)
     int32_t ret = vsprintf_s(logBuf, sizeof(logBuf), fmt, arg);
     va_end(arg);
     if (ret < 0) {
-        printf("media log length error.\n");
+#ifdef HI_LOG_ENABLE
+        (void)HiLogPrint(LOG_CORE, LOG_ERROR, LOG_DOMAIN, MEDIA_LOG_TITLE_TAG, "%{public}s",
+            "media log length error.");
+#else
+        (void)fprintf(stderr, "media log length error.\n");
+#endif
         return MEDIA_ERR;
     }
-    LogTime();
-    printf("%s\n", logBuf);
+#ifdef HI_LOG_ENABLE
+    (void)HiLogPrint(LOG_CORE, LOG_INFO, LOG_DOMAIN, MEDIA_LOG_TITLE_TAG, "%{public}s", logBuf);
+#else
+    (void)fprintf(stderr, "%s\n", logBuf);
+#endif
     return MEDIA_OK;
 }

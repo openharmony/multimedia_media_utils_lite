@@ -229,9 +229,12 @@ typedef enum {
     DISCONNECT = 1,
 } DeviceConnectStatus;
 
+/** Maximum length of audio device name, including the terminating null byte. */
+#define MAX_DEVICE_NAME_LEN 128
+
 typedef struct {
     uint32_t dhId;
-    std::string deviceName;
+    char deviceName[MAX_DEVICE_NAME_LEN];
     AudioSystemDeviceType deviceType;
     DeviceConnectStatus connectStatus;
 } AudioDeviceInfo;
