@@ -16,6 +16,7 @@
 #include "media_utils.h"
 #ifdef ENABLE_DFX
 #include <cinttypes>
+#include <ctime>
 
 #include "media_log.h"
 
@@ -38,19 +39,31 @@ static bool UIntMulIsOverflow64(uint64_t a, uint64_t b, uint64_t *value)
     return false;
 }
 
+static bool GetMonotonicTimeUs(uint64_t &timeUs, const char *errTag)
+{
+    struct timespec ts;
+    if (clock_gettime(CLOCK_MONOTONIC, &ts) != 0) {
+        MEDIA_ERR_LOG("%s clock_gettime failed", errTag);
+        return false;
+    }
+    const uint64_t usecPerSec = 1000000;
+    const uint64_t nsecPerUsec = 1000;
+    uint64_t secToUs = 0;
+    if (UIntMulIsOverflow64(static_cast<uint64_t>(ts.tv_sec), usecPerSec, &secToUs)) {
+        MEDIA_ERR_LOG("%s calculate result overflow!", errTag);
+        return false;
+    }
+    timeUs = secToUs + static_cast<uint64_t>(ts.tv_nsec) / nsecPerUsec;
+    return true;
+}
+
 void MediaRecordAudioRecvTime()
 {
-    struct timeval timeStart;
-    gettimeofday(&timeStart, nullptr);
-    const uint64_t timeUs = 1000000;
-    uint64_t secToUs = 0;
-    bool isOverflow =
-        UIntMulIsOverflow64(static_cast<uint64_t>(timeStart.tv_sec), timeUs, &secToUs);
-    if (isOverflow) {
-        MEDIA_ERR_LOG("PUIntMulIsOverflow64 calculate reslut overflow!");
+    uint64_t timeUs = 0;
+    if (!GetMonotonicTimeUs(timeUs, "MediaRecordAudioRecvTime")) {
         return;
     }
-    g_receiveAudiotime = secToUs + timeStart.tv_usec;
+    g_receiveAudiotime = timeUs;
 }
 
 void MediaPrintSyncTimeDiffUs()
@@ -64,17 +77,15 @@ void MediaPrintSyncTimeDiffUs()
     if (!g_receiveAudiotimeLast.compare_exchange_strong(expected, current)) {
         return;
     }
-    struct timeval timeEnd;
-    gettimeofday(&timeEnd, nullptr);
-    const uint64_t timeUs = 1000000;
-    uint64_t secToUs = 0;
-    bool isOverflow =
-        UIntMulIsOverflow64(static_cast<uint64_t>(timeEnd.tv_sec), timeUs, &secToUs);
-    if (isOverflow) {
-        MEDIA_ERR_LOG("CalcTimeDiffUsPrint calculate reslut overflow!");
+    uint64_t endUsec = 0;
+    if (!GetMonotonicTimeUs(endUsec, "MediaPrintSyncTimeDiffUs")) {
         return;
     }
-    uint64_t endUsec = static_cast<uint64_t>(timeEnd.tv_usec + secToUs);
+    if (endUsec < current) {
+        MEDIA_ERR_LOG("CalcTimeDiffUsPrint invalid time: endUsec=%" PRIu64 " current=%" PRIu64,
+            endUsec, current);
+        return;
+    }
     MEDIA_DFX_LOG("audio and video sync elapsed time: %" PRIu64 " us", endUsec - current);
 }
 #endif

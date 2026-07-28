@@ -30,7 +30,7 @@ extern "C" {
 #define DESC_MAX_LEN 64
 #define AUTO_MODE_MAX_NUM 16
 #define PRIVATE_META_MAX_LEN 32
-#define CAMERA_NAME_MAX_LEN 1024
+#define CAMERA_NAME_MAX_LEN 128
 
 typedef struct {
     int32_t x;

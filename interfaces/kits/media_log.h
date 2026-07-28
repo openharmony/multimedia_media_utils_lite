@@ -15,6 +15,7 @@
 #ifndef OHOS_MEDIA_LOG_H
 #define OHOS_MEDIA_LOG_H
 
+#include <cstdint>
 #include <stdio.h>
 
 #include "log.h"
@@ -37,8 +38,10 @@ enum MEDIA_LOG_LEVEL {
     MEDIA_LOG_FATAL,
 };
 
-int MediaLogPrintf(MEDIA_LOG_LEVEL level, const char *fmt, ...);
-int MediaDfxLogPrintf(const char *fmt, ...);
+int32_t MediaLogPrintf(MEDIA_LOG_LEVEL level, const char *fmt, ...);
+int32_t MediaDfxLogPrintf(const char *fmt, ...);
+void SetMediaLogLevel(MEDIA_LOG_LEVEL level);
+MEDIA_LOG_LEVEL GetMediaLogLevel(void);
 
 #define DECORATOR_LOG(op, level, fmt, args...)                         \
     do {                                                               \

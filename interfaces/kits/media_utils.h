@@ -22,4 +22,4 @@ void MediaRecordAudioRecvTime();
 
 void MediaPrintSyncTimeDiffUs();
 #endif
-#endif // OHOS_MEDIA_LOG_H
+#endif // OHOS_MEDIA_UTILS_H

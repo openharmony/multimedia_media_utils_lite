@@ -23,7 +23,24 @@
 
 static const char* MEDIA_LOG_TITLE_TAG = "MEDIA_COMMON";
 constexpr int32_t LOG_MAX_LEN = 4096;
+#ifdef NDEBUG
 static MEDIA_LOG_LEVEL g_enabledLevel = MEDIA_LOG_ERR;
+#else
+static MEDIA_LOG_LEVEL g_enabledLevel = MEDIA_LOG_DEBUG;
+#endif
+
+void SetMediaLogLevel(MEDIA_LOG_LEVEL level)
+{
+    if (level < MEDIA_LOG_DEBUG || level > MEDIA_LOG_FATAL) {
+        return;
+    }
+    g_enabledLevel = level;
+}
+
+MEDIA_LOG_LEVEL GetMediaLogLevel(void)
+{
+    return g_enabledLevel;
+}
 
 #ifdef HI_LOG_ENABLE
 static LogLevel MapLogLevel(MEDIA_LOG_LEVEL level)
@@ -37,6 +54,8 @@ static LogLevel MapLogLevel(MEDIA_LOG_LEVEL level)
             return LOG_WARN;
         case MEDIA_LOG_ERR:
             return LOG_ERROR;
+        case MEDIA_LOG_FATAL:
+            return LOG_FATAL;
         default:
             return LOG_INFO;
     }
@@ -85,7 +104,6 @@ int32_t MediaLogPrintf(MEDIA_LOG_LEVEL level, const char *fmt, ...)
     /* Per-thread buffer avoids 4KB stack use and needs no lock. */
     thread_local char logBuf[LOG_MAX_LEN];
     va_list arg;
-    (void)memset_s(&arg, sizeof(va_list), 0, sizeof(va_list));
     va_start(arg, fmt);
 
     int32_t ret = vsprintf_s(logBuf, sizeof(logBuf), fmt, arg);
@@ -102,7 +120,6 @@ int32_t MediaDfxLogPrintf(const char *fmt, ...)
 {
     thread_local char logBuf[LOG_MAX_LEN];
     va_list arg;
-    (void)memset_s(&arg, sizeof(va_list), 0, sizeof(va_list));
     va_start(arg, fmt);
 
     int32_t ret = vsprintf_s(logBuf, sizeof(logBuf), fmt, arg);
