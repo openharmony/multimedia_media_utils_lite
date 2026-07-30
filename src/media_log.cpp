@@ -15,6 +15,7 @@
 
 #include "media_log.h"
 #include "securec.h"
+#include <atomic>
 #ifdef HI_LOG_ENABLE
 #include "hilog/log.h"
 #else
@@ -24,9 +25,9 @@
 static const char* MEDIA_LOG_TITLE_TAG = "MEDIA_COMMON";
 constexpr int32_t LOG_MAX_LEN = 4096;
 #ifdef NDEBUG
-static MEDIA_LOG_LEVEL g_enabledLevel = MEDIA_LOG_ERR;
+static std::atomic<MEDIA_LOG_LEVEL> g_enabledLevel {MEDIA_LOG_ERR};
 #else
-static MEDIA_LOG_LEVEL g_enabledLevel = MEDIA_LOG_DEBUG;
+static std::atomic<MEDIA_LOG_LEVEL> g_enabledLevel {MEDIA_LOG_DEBUG};
 #endif
 
 void SetMediaLogLevel(MEDIA_LOG_LEVEL level)
@@ -34,12 +35,12 @@ void SetMediaLogLevel(MEDIA_LOG_LEVEL level)
     if (level < MEDIA_LOG_DEBUG || level > MEDIA_LOG_FATAL) {
         return;
     }
-    g_enabledLevel = level;
+    g_enabledLevel.store(level);
 }
 
 MEDIA_LOG_LEVEL GetMediaLogLevel(void)
 {
-    return g_enabledLevel;
+    return g_enabledLevel.load();
 }
 
 #ifdef HI_LOG_ENABLE
@@ -64,7 +65,7 @@ static LogLevel MapLogLevel(MEDIA_LOG_LEVEL level)
 
 static int32_t MediaLogPrintfOut(MEDIA_LOG_LEVEL level, const char *fmt)
 {
-    if (level < g_enabledLevel) {
+    if (level < g_enabledLevel.load()) {
         return MEDIA_OK;
     }
     if (fmt == nullptr) {

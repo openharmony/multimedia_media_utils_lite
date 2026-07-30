@@ -26,15 +26,16 @@ static std::atomic<uint64_t> g_receiveAudiotimeLast = 0;
 static bool UIntMulIsOverflow64(uint64_t a, uint64_t b, uint64_t *value)
 {
     if (a == 0 || b == 0) {
+        if (value != nullptr) {
+            *value = 0;
+        }
         return false;
     }
     if (UINT64_MAX / a < b) {
         return true;
     }
-
-    uint64_t result = static_cast<uint64_t>((a) * (b));
     if (value != nullptr) {
-        *value = result;
+        *value = a * b;
     }
     return false;
 }
