@@ -99,6 +99,9 @@ const int32_t  ERR_NOT_STARTED = BASE_MEDIA_ERR_OFFSET + 8;
 
 /** Unknown error */
 const int32_t  ERR_UNKNOWN = BASE_MEDIA_ERR_OFFSET + 200;
+
+/** read data time out */
+const  int32_t ERR_AUDIO_READ_DATA_TIME_OUT = -40049;
 }  // namespace Media
 }  // namespace OHOS
 #endif  // MEDIA_ERRORS_H

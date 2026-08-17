@@ -53,6 +53,7 @@ extern const char *MIME_AUDIO_AAC;
 /** Indicates the codec for RAW audios (not supported yet), which is a value of the codec type key. */
 extern const char *MIME_AUDIO_RAW;
 extern const char *PAUSE_AFTER_PLAY;
+extern const char *LAYER_PRIORITY;
 
 /**
  * @brief Enumerates formats.

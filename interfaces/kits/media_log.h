@@ -15,6 +15,7 @@
 #ifndef OHOS_MEDIA_LOG_H
 #define OHOS_MEDIA_LOG_H
 
+#include <cstdint>
 #include <stdio.h>
 
 #include "log.h"
@@ -26,23 +27,34 @@
 
 #define __FILENAME__ (__builtin_strrchr(__FILE__, '/') ? __builtin_strrchr(__FILE__, '/') + 1 : __FILE__)
 
-#ifndef OHOS_DEBUG
-#define DECORATOR_HILOG(op, fmt, args...) \
-    do {                                  \
-        op(LOG_CORE, fmt, ##args);        \
-    } while (0)
-#else
-#define DECORATOR_HILOG(op, fmt, args...)                                                \
-    do {                                                                                 \
-        op(LOG_CORE, "{%s()-%s:%d} " fmt, __FUNCTION__, __FILENAME__, __LINE__, ##args); \
-    } while (0)
-#endif
+/*
+ * @brief  log level type.
+ */
+enum MEDIA_LOG_LEVEL {
+    MEDIA_LOG_DEBUG = 0,
+    MEDIA_LOG_INFO,
+    MEDIA_LOG_WARN,
+    MEDIA_LOG_ERR,
+    MEDIA_LOG_FATAL,
+};
 
-#define MEDIA_DEBUG_LOG(fmt, ...) DECORATOR_HILOG(HILOG_DEBUG, fmt, ##__VA_ARGS__)
-#define MEDIA_ERR_LOG(fmt, ...) DECORATOR_HILOG(HILOG_ERROR, fmt, ##__VA_ARGS__)
-#define MEDIA_WARNING_LOG(fmt, ...) DECORATOR_HILOG(HILOG_WARN, fmt, ##__VA_ARGS__)
-#define MEDIA_INFO_LOG(fmt, ...) DECORATOR_HILOG(HILOG_INFO, fmt, ##__VA_ARGS__)
-#define MEDIA_FATAL_LOG(fmt, ...) DECORATOR_HILOG(HILOG_FATAL, fmt, ##__VA_ARGS__)
+int32_t MediaLogPrintf(MEDIA_LOG_LEVEL level, const char *fmt, ...);
+int32_t MediaDfxLogPrintf(const char *fmt, ...);
+void SetMediaLogLevel(MEDIA_LOG_LEVEL level);
+MEDIA_LOG_LEVEL GetMediaLogLevel(void);
+
+#define DECORATOR_LOG(op, level, fmt, args...)                         \
+    do {                                                               \
+        op(level, "{%s():%d} " fmt, __FUNCTION__, __LINE__, ##args);   \
+    } while (0)
+
+
+#define MEDIA_DEBUG_LOG(fmt, ...) DECORATOR_LOG(MediaLogPrintf, MEDIA_LOG_DEBUG, fmt, ##__VA_ARGS__)
+#define MEDIA_ERR_LOG(fmt, ...) DECORATOR_LOG(MediaLogPrintf, MEDIA_LOG_ERR, fmt, ##__VA_ARGS__)
+#define MEDIA_WARNING_LOG(fmt, ...) DECORATOR_LOG(MediaLogPrintf, MEDIA_LOG_WARN, fmt, ##__VA_ARGS__)
+#define MEDIA_INFO_LOG(fmt, ...) DECORATOR_LOG(MediaLogPrintf, MEDIA_LOG_INFO, fmt, ##__VA_ARGS__)
+#define MEDIA_FATAL_LOG(fmt, ...) DECORATOR_LOG(MediaLogPrintf, MEDIA_LOG_FATAL, fmt, ##__VA_ARGS__)
+#define MEDIA_DFX_LOG(fmt, ...) MediaDfxLogPrintf(fmt, ##__VA_ARGS__)
 
 #define MEDIA_OK 0
 #define MEDIA_INVALID_PARAM (-1)
